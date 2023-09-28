@@ -109,6 +109,8 @@ out/*
 doc/*
 notes/*
 figures/*
+SLiM/*
+*.tar.xz
 
 # Untracked Files for public repo #
 ###################################
