@@ -1,8 +1,8 @@
-# Comment on Jay et al.~(2022): Ignoring inversion extinctions paints a misleading picture of sex chromosome evolution.
+# Comment on Jay et al. (2022): Ignoring inversion extinctions paints a misleading picture of sex chromosome evolution.
 
 ## Overview
 
-This is a GitHub repository for R code accompanying a comment article addressing the presentation of simulation results from Jay et al.~(2022) "*Sheltering of deleterious mutations explains the stepwise extension of recombination suppression on sex chromosomes and other supergenes*" (doi: 10.1371/journal.pbio.3001698). In it you will find all the code necessary to reproduce key figures from the original article and also the same figures produced using the full datasets.
+This is a GitHub repository for R code accompanying a comment article addressing the presentation of simulation results from Jay et al. (2022) "*Sheltering of deleterious mutations explains the stepwise extension of recombination suppression on sex chromosomes and other supergenes*" (doi: 10.1371/journal.pbio.3001698). In it you will find all the code necessary to reproduce key figures from the original article and also the same figures produced using the full datasets.
 
 
 ## Abstract
@@ -15,9 +15,9 @@ Citing information will be made available after this comment has passed through 
 
 ##  Instructions
 
-This repository provides all code necessary to (1) reproduce the original figures from Jay et al.~(2022), (2) produce accompanying figures WITHOUT EXCLUDING inversions that went extinct in the first 20 generations, and (3) export all figures as .pdf's. To do so, please follow these basic steps:
+This repository provides all code necessary to (1) reproduce the original figures from Jay et al. (2022), (2) produce accompanying figures WITHOUT EXCLUDING inversions that went extinct in the first 20 generations, and (3) export all figures as .pdf's. To do so, please follow these basic steps:
 
-1. Clone the repo using the following: `git clone https://https://github.com/colin-olito/Jay-etal-2022-Comment`. Alternatively, on the project main page on GitHub, click on the green button `clone` or `download` and then click on `Download ZIP`.  
+1. Clone the repo using the following: `git clone https://https://github.com/colin-olito/Jay-2022-Comment`. Alternatively, on the project main page on GitHub, click on the green button `clone` or `download` and then click on `Download ZIP`.  
 2. Download the original datasets for Jay et al. (2022) from [`here`](https://figshare.com/articles/dataset/Model_of_sex-chromosome_Evolution_-_datasets/19961033) to the main working directory of this repository, and unzip.  
 	- If necessary, rename the unzipped directory containing the datasets `./ModelSexChrom` so that it can be correctly referenced by `R`.  
 3. Check that you have a recent version of [`R`](https://www.r-project.org/) installed, and that you have installed and loaded the required packages in `./R/Recreate-and-Compare-Jay-etal-Figs.R`. Correctly running this code requires installation of the following packages:  
@@ -34,7 +34,7 @@ This repository provides all code necessary to (1) reproduce the original figure
 	- `library(ggnewscale)`  
 	- `library(tidyverse)` # I get compile error for dependency package `ragg`. However, the code will run without `tidyverse` installed.  
 	- `library(directlabels)`  
-4. Make sure that the working directory for your `R` session is the root directory of this repo (e.g., `Jay-etal-2022-Comment-master/`).  
+4. Make sure that the working directory for your `R` session is the root directory of this repo (e.g., `Jay-2022-Comment-master/`).  
 5. Run `./makeFigs.R` either interactively in `R` or in terminal.  
 
 
