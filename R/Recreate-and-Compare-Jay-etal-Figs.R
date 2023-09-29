@@ -113,7 +113,8 @@ ggsave(filename="./figures/Jay-etal-2022-Fig3c.pdf",
 #' generation 20
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
-DataSummaryAll=Summary %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut)) # For each set of parameter, compute the fraction of mutation fixed (only for not mutation-free inversion)
+# Also calculate poisson error c.i.
+DataSummaryAll=Summary %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000) # For each set of parameter, compute the fraction of mutation fixed (only for not mutation-free inversion)
 DataSummaryAll$u=factor(DataSummaryAll$u, labels = c("mu==1 %*% 10^{-09}","mu==1 %*% 10^{-08}"), )
 
 #' Dummy data to plot benchmarks for 1/Ne
@@ -127,6 +128,7 @@ hLineData$u    <- factor(hLineData$u, levels = levels(DataSummaryAll$u))
 BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n & DataSummaryAll$s<0),], aes( y=ProbSpread)) #Plot the result
 PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)+
   geom_line(aes(x=h, color=as.factor(s)), size=1)+
+  geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.0125)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
   ylab("Fraction of inversions fixed")+
@@ -144,7 +146,7 @@ PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)
         strip.text.x = element_text(face="bold"),
         plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=4),
         plot.margin = margin(22, 3, 3, 3, "pt"))+
-  facet_grid(u~Position, scales = "free_y", labeller = label_parsed)+
+  facet_grid(u~Position, scales = "free", labeller = label_parsed)+
   geom_hline(data=hLineData, aes(yintercept= neutralExpect), color="dodgerblue", linewidth=1, linetype='dashed')+
     labs(title = "Fraction of inversions fixed after 10,000 generations")
 
@@ -162,6 +164,7 @@ ggsave(filename="./figures/Jay-etal-2022-Fig3c-AllInversions.pdf",
 BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n & DataSummaryAll$s<0),], aes( y=ProbSpread)) #Plot the result
 PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)+
   geom_line(aes(x=h, color=as.factor(s)), size=1)+
+  geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.0125)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
   ylab("Fraction of inversions fixed")+
@@ -238,6 +241,7 @@ hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSummaryAll$In
 Base=ggplot(DataSummaryAll[(DataSummaryAll$u == U & DataSummaryAll$s<0),], aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_Incl20=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
+  geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
   ylab("Fraction of inversions fixed after 10,000 generations")+
@@ -315,7 +319,7 @@ ggsave(filename="./figures/Jay-etal-2022-10k-FigS16.pdf",
 #' Same as before but for N=10,000 ###
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
-DataSummary10kAll= Summary10k %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut))
+DataSummary10kAll= Summary10k %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000)
 DataSummary10kAll$InvSize=as.factor(paste0("Inversion size=",DataSummary10kAll$InvSize))
 DataSummary10kAll$InvSize=relevel(DataSummary10kAll$InvSize,"Inversion size=500000")
 
@@ -330,6 +334,7 @@ hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSummary10kAll
 Base=ggplot(DataSummary10kAll[(DataSummary10kAll$s<0),], aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_10k_Incl20=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
+  geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
   ylab("Fraction of inversions fixed after 10,000 generations")+
@@ -352,6 +357,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS16-10k-AllInversions.pdf",
 Base=ggplot(DataSummary10kAll[(DataSummary10kAll$s<0),], aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_10k_Incl20_Zoom=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
+  geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
   ylab("Fraction of inversions fixed after 10,000 generations")+
@@ -442,7 +448,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS17-shDistribution.pdf",
 #' and dominance coefficient drawn from a uniform distribution
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
-DataSummaryLambAll=summarySub_BLamb %>% group_by(N,u,r,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut))
+DataSummaryLambAll=summarySub_BLamb %>% group_by(N,u,r,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000)
 DataSummaryLambAll$InvSize=as.factor(paste0("Inversion size=",DataSummaryLambAll$InvSize))
 DataSummaryLambAll$InvSize=relevel(DataSummaryLambAll$InvSize,"Inversion size=500000")
 DataSubAll=DataSummaryLambAll[(DataSummaryLambAll$s<0),]
@@ -459,6 +465,7 @@ hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSubAll$InvSiz
 Base=ggplot(DataSubAll, aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_Lamb_noExcl=Base+geom_point(aes(x=s, color=as.factor(u)), size=4)+
   geom_line(aes(x=s, color=as.factor(u)), size=2)+
+  geom_errorbar(aes(x=s, color=as.factor(u), ymin = lower, ymax = upper), width = 0.1)+
   scale_color_manual("mutation rate (u)", values=Col)+
   scale_x_log10()+
   ylab("Fraction of inversions fixed after 10,000 generations")+
