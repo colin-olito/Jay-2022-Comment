@@ -85,7 +85,7 @@ PlotPropInvSpread=Base+geom_point(aes(x=h,color=as.factor(s)), size=1)+
   geom_line(aes(x=h, color=as.factor(s)), size=1)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
-  ylab("Conditional rate of inversion fixation")+
+  ylab("Conditional fraction of inversions fixed")+
   xlab("h")+
   ThemeSobr+
   theme(panel.border = element_blank(), 
@@ -114,8 +114,9 @@ ggsave(filename="./figures/Jay-etal-2022-Fig3c.pdf",
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
 # Also calculate poisson error c.i.
-DataSummaryAll=Summary %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000) # For each set of parameter, compute the fraction of mutation fixed (only for not mutation-free inversion)
+DataSummaryAll=Summary %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), nSeg=sum(State=="Segregating"), upper=qgamma(0.975, shape=nFix, rate=1)/10000, lower=qgamma(0.025, shape=nFix, rate=1)/10000) # For each set of parameter, compute the fraction of mutation fixed (only for not mutation-free inversion)
 DataSummaryAll$u=factor(DataSummaryAll$u, labels = c("mu==1 %*% 10^{-09}","mu==1 %*% 10^{-08}"), )
+
 
 #' Dummy data to plot benchmarks for 1/Ne
 neutralExpect  <-  c(1/(2*DataSummaryAll$N[1]), (2/DataSummaryAll$N[1]))
@@ -190,6 +191,17 @@ PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)),
 PlotPropInvSpread_Incl20_newGrid
 ggsave(filename="./figures/Jay-etal-2022-Fig3c-AllInversions-NewGrid.pdf", 
      width = 20, height = 11, units = "cm")
+
+
+#' How many of the parameter sets from Fig 3c 
+#' had no autosomal inversions go to fixation?
+Fig3cData  <-  subset(DataSummaryAll, (Position=="Autosome" & InvSize==2000000))
+#' Calculate proportion of these datasets where 
+#' autosomal fixations > 0 
+1-sum(Fig3cData$nFix==0)/length(Fig3cData$nFix) 
+#' Fig 3a presented one of the minority cases where no autosomal 
+#' inversions went to fixation. Autosomal fixations occurred in
+#'  ~86% of the parameter sets used in 3c.
 
 
 
@@ -319,7 +331,7 @@ ggsave(filename="./figures/Jay-etal-2022-10k-FigS16.pdf",
 #' Same as before but for N=10,000 ###
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
-DataSummary10kAll= Summary10k %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000)
+DataSummary10kAll= Summary10k %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qgamma(0.975, shape=nFix, rate=1)/10000, lower=qgamma(0.025, shape=nFix, rate=1)/10000)
 DataSummary10kAll$InvSize=as.factor(paste0("Inversion size=",DataSummary10kAll$InvSize))
 DataSummary10kAll$InvSize=relevel(DataSummary10kAll$InvSize,"Inversion size=500000")
 
@@ -448,7 +460,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS17-shDistribution.pdf",
 #' and dominance coefficient drawn from a uniform distribution
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
-DataSummaryLambAll=summarySub_BLamb %>% group_by(N,u,r,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qpois(0.975, lambda=nFix)/10000, lower=qpois(0.025, lambda=nFix)/10000)
+DataSummaryLambAll=summarySub_BLamb %>% group_by(N,u,r,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qgamma(0.975, shape=nFix, rate=1)/10000, lower=qgamma(0.025, shape=nFix, rate=1)/10000)
 DataSummaryLambAll$InvSize=as.factor(paste0("Inversion size=",DataSummaryLambAll$InvSize))
 DataSummaryLambAll$InvSize=relevel(DataSummaryLambAll$InvSize,"Inversion size=500000")
 DataSubAll=DataSummaryLambAll[(DataSummaryLambAll$s<0),]
