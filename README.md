@@ -7,15 +7,15 @@ This is a GitHub repository for R code accompanying a comment article addressing
 
 ## Abstract
 
-To be added...
+In a recent PLoS Biology article, Jay and colleagues (doi: [`10.1371/journal.pbio.3001698`](10.1371/journal.pbio.3001698)) proposed "a novel theory of sex chromosome evolution" based on the sheltering of deleterious mutations by an inversion linked to a sex-determining locus. Their key result was a demonstration that the fraction of fixed inversions among replicate individual-based Wright-Fisher simulations was much higher for inversions expanding the sex-linked region on a proto-Y chromosome compared with the fraction for autosomal inversions. The results were presented and discussed as estimates of the probability of inversion spread and fixation. However, inspection of Jay et al.’s results and their supplementary materials reveals that they presented the fraction of fixed inversions conditioned on those inversions having survived beyond 20 generations. This unusual condition excludes around 90% of the extinctions occuring in the simulations, and means that their values greatly overestimated the fixation probabilities of new inversions. Moreover, the authors simulated completely neutral inversions (i.e., those capturing only neutral mutations), but these data were excluded from all figures and never mentioned in the paper. Correctly plotting the fraction of fixed inversions using their full dataset reveals that they are indistinguishable from neutrality for most parameter conditions studied, with the notable exception of Y-linked inversions that captured many loci segregating for completely recessive (or nearly so) deleterious mutations. Reevaluation of Jay et al.’s results indicate that the sheltering mechanism they propose is unlikely to robustly provide a selective advantage to inversions suppressing recombination between newly evolving X and Y chromosomes.
 
 ## Citing information
 
-Citing information will be made available after this comment has passed through peer review.
+Citing information will be made available after this manuscript has passed through peer review.
 
 ##  Instructions
 
-This repository provides all code necessary to (1) reproduce the original figures from Jay et al. (2022), (2) produce accompanying figures WITHOUT EXCLUDING inversions that went extinct in the first 20 generations, and (3) export all figures as .pdf's. To do so, please follow these basic steps:
+This repository provides all code necessary to (1) reproduce the original figures from Jay et al. (2022), (2) produce accompanying figures WITHOUT EXCLUDING neutral inversions or those going extinct in the first 20 generations, and (3) export all figures as .pdf's. To do so, please follow these basic steps:
 
 1. Clone the repo using the following: `git clone https://https://github.com/colin-olito/Jay-2022-Comment`. Alternatively, on the project main page on GitHub, click on the green button `clone` or `download` and then click on `Download ZIP`.  
 2. Download the original datasets for Jay et al. (2022) from [`here`](https://figshare.com/articles/dataset/Model_of_sex-chromosome_Evolution_-_datasets/19961033) to the main working directory of this repository, and unzip.  
