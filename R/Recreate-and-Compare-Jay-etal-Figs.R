@@ -51,7 +51,7 @@ ThemeSobr=  theme(
 
 #############################################################
 ##############################################################
-#' Re-create Fig.3c as it appears in Jay et al. (2022)
+#' Re-create Fig.3c EXACTLY as it appears in Jay et al. (2022)
 # Simul=read.table(paste("~/Paper/ModelSexChrom/V3/CleanDataset/InversionTrajectories_N=1000_Fig3-S13-S15-S19.txt",sep=""), stringsAsFactors = F) #File containing all simulation with N=1000
 Simul=read.table(paste("./ModelSexChrom/InversionTrajectories_N=1000_Fig3-S13-S15-S19.txt",sep=""), stringsAsFactors = F) #File containing all simulation with N=1000
 colnames(Simul)=c("N", "u", "r", "h", "s", "Gen", "DebInv", "FinInv", "Rep", 
@@ -108,10 +108,46 @@ ggsave(filename="./figures/Jay-etal-2022-Fig3c.pdf",
 	   width = 20, height = 10, units = "cm")
 
 
+
+
+
+#############################################################
+##############################################################
+#' Re-create Fig.3c as it appears in Jay et al. (2022)
+#' WITHOUT EXCLUDING s = 0.00
+Col=scales::viridis_pal(begin=0.0, end=0.8, option="A")(6) #Define color palette
+
+Base=ggplot(DataSummary[(DataSummary$InvSize == n),], aes( y=ProbSpread)) #Plot the result
+PlotPropInvSpread=Base+geom_point(aes(x=h,color=as.factor(s)), size=1)+
+  geom_line(aes(x=h, color=as.factor(s)), size=1)+
+  scale_color_manual("Selection coefficient (s)", values=Col)+
+  scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
+  ylab("Conditional fraction of inversions fixed")+
+  xlab("h")+
+  ThemeSobr+
+  theme(panel.border = element_blank(), 
+        legend.position = c(0.5,1.08),
+        legend.direction = "horizontal",
+        legend.text = element_text(face="bold"),
+        legend.key = element_blank(),
+        panel.spacing.x = unit(1, "lines"),
+        legend.background = element_blank(),
+        strip.background.x  = element_blank(),
+        axis.title = element_text(face="bold"),
+        strip.text.x = element_text(face="bold"),
+        plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=8),
+        plot.margin = margin(22, 3, 3, 3, "pt"))+
+  facet_grid(u~Position, scales = "free_y", labeller = label_parsed)+
+  labs(title = "Fraction of inversions fixed after 10,000 generations (excluding early extinctions)")
+
+PlotPropInvSpread
+ggsave(filename="./figures/Jay-etal-2022-Fig3c-wNeutral.pdf", 
+     width = 25, height = 15, units = "cm")
+
 ##############################################################
 #' Re-create Fig.3c without excluding inversions lost by
-#' generation 20
-
+#' generation 20 and including simulations for s = 0.0
+#' 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
 # Also calculate poisson error c.i.
 DataSummaryAll=Summary %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), nSeg=sum(State=="Segregating"), upper=qgamma(0.975, shape=nFix, rate=1)/10000, lower=qgamma(0.025, shape=nFix, rate=1)/10000) # For each set of parameter, compute the fraction of mutation fixed (only for not mutation-free inversion)
@@ -126,7 +162,7 @@ hLineData      <-  data.frame("Position"=columns, "u"=rows, neutralExpect)
 hLineData$u    <- factor(hLineData$u, levels = levels(DataSummaryAll$u))
 
 # Make the plot
-BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n & DataSummaryAll$s<0),], aes( y=ProbSpread)) #Plot the result
+BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n),], aes( y=ProbSpread)) #Plot the result
 PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)+
   geom_line(aes(x=h, color=as.factor(s)), size=1)+
   geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.0125)+
@@ -136,7 +172,7 @@ PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)
   xlab("h")+
   ThemeSobr+
   theme(panel.border = element_blank(), 
-        legend.position = c(0.5,1.13),
+        legend.position = c(0.5,1.08),
         legend.direction = "horizontal",
         legend.text = element_text(face="bold"),
         legend.key = element_blank(),
@@ -145,7 +181,7 @@ PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)
         strip.background.x  = element_blank(),
         axis.title = element_text(face="bold"),
         strip.text.x = element_text(face="bold"),
-        plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=4),
+        plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=8),
         plot.margin = margin(22, 3, 3, 3, "pt"))+
   facet_grid(u~Position, scales = "free", labeller = label_parsed)+
   geom_hline(data=hLineData, aes(yintercept= neutralExpect), color="dodgerblue", linewidth=1, linetype='dashed')+
@@ -154,15 +190,16 @@ PlotPropInvSpread_Incl20=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)
 #' Show plot, save as pdf
 PlotPropInvSpread_Incl20
 ggsave(filename="./figures/Jay-etal-2022-Fig3c-AllInversions.pdf", 
-	   width = 20, height = 11, units = "cm")
+	   width = 20, height = 15, units = "cm")
 
 
 #' Figure 3c, including inversions lost by generation 20
+#' and including simulations for s = 0
 #' Reversing grid arrangment so Autosomal and Y inversions
 #' are on the same y-axis scale
 
 # Make the plot
-BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n & DataSummaryAll$s<0),], aes( y=ProbSpread)) #Plot the result
+BaseAll=ggplot(DataSummaryAll[(DataSummaryAll$InvSize == n ),], aes( y=ProbSpread)) #Plot the result
 PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)), size=1)+
   geom_line(aes(x=h, color=as.factor(s)), size=1)+
   geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.0125)+
@@ -172,7 +209,7 @@ PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)),
   xlab("h")+
   ThemeSobr+
   theme(panel.border = element_blank(), 
-        legend.position = c(0.5,1.13),
+        legend.position = c(0.5,1.11),
         legend.direction = "horizontal",
         legend.text = element_text(face="bold"),
         legend.key = element_blank(),
@@ -181,7 +218,7 @@ PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)),
         strip.background.x  = element_blank(),
         axis.title = element_text(face="bold"),
         strip.text.x = element_text(face="bold"),
-        plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=4),
+        plot.title=element_text(size=12, face="bold",hjust=0.5, vjust=9),
         plot.margin = margin(22, 3, 3, 3, "pt"))+
   facet_grid(Position~u, scales = "free_y", labeller = label_parsed)+
   geom_hline(data=hLineData, aes(yintercept= neutralExpect), color="dodgerblue", linewidth=1, linetype='dashed')+
@@ -190,7 +227,7 @@ PlotPropInvSpread_Incl20_newGrid=BaseAll+geom_point(aes(x=h,color=as.factor(s)),
 #' Show plot, save as pdf
 PlotPropInvSpread_Incl20_newGrid
 ggsave(filename="./figures/Jay-etal-2022-Fig3c-AllInversions-NewGrid.pdf", 
-     width = 20, height = 11, units = "cm")
+     width = 20, height = 14, units = "cm")
 
 
 #' How many of the parameter sets from Fig 3c 
@@ -198,7 +235,7 @@ ggsave(filename="./figures/Jay-etal-2022-Fig3c-AllInversions-NewGrid.pdf",
 Fig3cData  <-  subset(DataSummaryAll, (Position=="Autosome" & InvSize==2000000))
 #' Calculate proportion of these datasets where 
 #' autosomal fixations > 0 
-1-sum(Fig3cData$nFix==0)/length(Fig3cData$nFix) 
+1-sum(Fig3cData$nFix==0)/length(Fig3cData$nFix)
 #' Fig 3a presented one of the minority cases where no autosomal 
 #' inversions went to fixation. Autosomal fixations occurred in
 #'  ~86% of the parameter sets used in 3c.
@@ -208,12 +245,12 @@ Fig3cData  <-  subset(DataSummaryAll, (Position=="Autosome" & InvSize==2000000))
 #############################################################
 #############################################################
 #' Re-create Fig.S15 as it appears in Jay et al. (2022)
-#' 
+#' including simulations for s = 0.0
 U="mu==1 %*% 10^{-08}"
 DataSummary$InvSize=as.factor(paste0("Inversion size=",DataSummary$InvSize))
 DataSummary$InvSize=relevel(DataSummary$InvSize,"Inversion size=500000")
 # Make the plot
-Base=ggplot(DataSummary[(DataSummary$u == U & DataSummary$s<0),], aes( y=ProbSpread))
+Base=ggplot(DataSummary[(DataSummary$u == U),], aes( y=ProbSpread))
 PlotPropInvSpread_AllInv=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
@@ -235,6 +272,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS15.pdf",
 
 ########################################################################
 #' Re-create Fig.S15 without excluding inversions lost by generation 20
+#' and including simulations for s = 0.0.
 #' Same as figure 3C but with different inversion size
 
 
@@ -250,7 +288,7 @@ hLineData      <-  data.frame("Position"=columns, "InvSize"=rows, neutralExpect)
 hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSummaryAll$InvSize))
 
 #' Make the plot
-Base=ggplot(DataSummaryAll[(DataSummaryAll$u == U & DataSummaryAll$s<0),], aes( y=ProbSpread))
+Base=ggplot(DataSummaryAll[(DataSummaryAll$u == U),], aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_Incl20=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
   geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
@@ -277,6 +315,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS15-AllInversions.pdf",
 #############################################################
 #############################################################
 #' Re-create Fig.S16 as it appears in Jay et al. (2022)
+#' and including simulations for s = 0.0.
 #' Same as before but for N=10,000 ###
 
 #Simul10k=read.table(paste("~/Paper/ModelSexChrom/V3/CleanDataset/InversionTrajectories_N=10000_FigS11-S12-S16.txt",sep=""), stringsAsFactors = F)
@@ -301,14 +340,14 @@ Summary10k[Summary10k$State=="LostLate",]$StateCode=0
 Summary10k[Summary10k$State=="Segregating",]$StateCode=0
 SumNoLostEarly10k=subset(Summary10k, (Summary10k$State!="LostEarly" & Summary10k$InitMutNumb>0))
 DataSummary10k= SumNoLostEarly10k %>% group_by(N,u,r,h,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut))
-Col=scales::viridis_pal(begin=0.0, end=0.8, option="A")(5)
+Col=scales::viridis_pal(begin=0.0, end=0.8, option="A")(6)
 options(scipen=0)
 DataSummary10k$InvSize=as.factor(paste0("Inversion size=",DataSummary10k$InvSize))
 DataSummary10k$InvSize=relevel(DataSummary10k$InvSize,"Inversion size=500000")
 
 #' Make Plot
-Base=ggplot(DataSummary10k[(DataSummary10k$s<0),], aes( y=ProbSpread))
-PlotPropInvSpread_AllInv_10k=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
+Base=ggplot(DataSummary10k, aes( y=ProbSpread)) #DataSummary10k[(DataSummary10k$s<0),]
+PlotPropInvSpread_10k=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
   scale_color_manual("Selection coefficient (s)", values=Col)+
   scale_size_manual("Inversion size", labels=c("0.5Mb", "1Mb", "2Mb", "5Mb"), values=c(1,2,3,4))+
@@ -321,13 +360,14 @@ PlotPropInvSpread_AllInv_10k=Base+geom_point(aes(x=h,color=as.factor(s)), size=4
   facet_grid(InvSize ~Position)
 
 #' Show plot, save as pdf
-PlotPropInvSpread_AllInv_10k
-ggsave(filename="./figures/Jay-etal-2022-10k-FigS16.pdf", 
+PlotPropInvSpread_10k
+ggsave(filename="./figures/Jay-etal-2022-FigS16-10k.pdf", 
 	   width = 35, height = 30, units = "cm")
 
 
 ########################################################################
 #' Re-create Fig.S16 without excluding inversions lost by generation 20
+#' and including simulations for s = 0.0.
 #' Same as before but for N=10,000 ###
 
 # CREATE DATA SUMMARY WITHOUT EXCLUDING LostEarly INVERSIONS 
@@ -343,7 +383,7 @@ hLineData      <-  data.frame("Position"=columns, "InvSize"=rows, neutralExpect)
 hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSummary10kAll$InvSize))
 
 #' Make Plot
-Base=ggplot(DataSummary10kAll[(DataSummary10kAll$s<0),], aes( y=ProbSpread))
+Base=ggplot(DataSummary10kAll, aes( y=ProbSpread)) #
 PlotPropInvSpread_AllInv_10k_Incl20=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
   geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
@@ -366,7 +406,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS16-10k-AllInversions.pdf",
 
 
 #' Modified version of Fig.S16 to zoom in on results for h > 0.01
-Base=ggplot(DataSummary10kAll[(DataSummary10kAll$s<0),], aes( y=ProbSpread))
+Base=ggplot(DataSummary10kAll, aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_10k_Incl20_Zoom=Base+geom_point(aes(x=h,color=as.factor(s)), size=4)+
   geom_line(aes(x=h, color=as.factor(s)), size=2)+
   geom_errorbar(aes(x=h, color=as.factor(s), ymin = lower, ymax = upper), width = 0.025)+
@@ -426,7 +466,7 @@ options(scipen=0)
 Col=scales::viridis_pal(begin=0.2, end=0.6, option="A")(2)
 DataSummaryLamb$InvSize=as.factor(paste0("Inversion size=",DataSummaryLamb$InvSize))
 DataSummaryLamb$InvSize=relevel(DataSummaryLamb$InvSize,"Inversion size=500000")
-DataSub=DataSummaryLamb[(DataSummaryLamb$s<0),]
+DataSub=DataSummaryLamb#[(DataSummaryLamb$s<0),]
 DataSub$s=-DataSub$s
 
 #' Make Plot
@@ -434,7 +474,7 @@ Base=ggplot(DataSub, aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_Lamb=Base+geom_point(aes(x=s, color=as.factor(u)), size=4)+
   geom_line(aes(x=s, color=as.factor(u)), size=2)+
   scale_color_manual("mutation rate (u)", values=Col)+
-  scale_x_log10()+
+#  scale_x_log10()+
   ylab("Fraction of inversions fixed after 10,000 generations (excl. early extinctions)")+
   xlab("mean(s)")+
   ThemeSobr+
@@ -463,7 +503,7 @@ ggsave(filename="./figures/Jay-etal-2022-FigS17-shDistribution.pdf",
 DataSummaryLambAll=summarySub_BLamb %>% group_by(N,u,r,s,InvSize, Position) %>% summarise(ProbSpread=mean(StateCode), MeanSegMut=mean(MinSegMut), nFix=sum(StateCode), upper=qgamma(0.975, shape=nFix, rate=1)/10000, lower=qgamma(0.025, shape=nFix, rate=1)/10000)
 DataSummaryLambAll$InvSize=as.factor(paste0("Inversion size=",DataSummaryLambAll$InvSize))
 DataSummaryLambAll$InvSize=relevel(DataSummaryLambAll$InvSize,"Inversion size=500000")
-DataSubAll=DataSummaryLambAll[(DataSummaryLambAll$s<0),]
+DataSubAll=DataSummaryLambAll
 DataSubAll$s=-DataSubAll$s
 
 #' Dummy data to plot benchmarks for 1/Ne
@@ -477,9 +517,10 @@ hLineData$InvSize <- factor(hLineData$InvSize, levels = levels(DataSubAll$InvSiz
 Base=ggplot(DataSubAll, aes( y=ProbSpread))
 PlotPropInvSpread_AllInv_Lamb_noExcl=Base+geom_point(aes(x=s, color=as.factor(u)), size=4)+
   geom_line(aes(x=s, color=as.factor(u)), size=2)+
-  geom_errorbar(aes(x=s, color=as.factor(u), ymin = lower, ymax = upper), width = 0.1)+
+  geom_errorbar(aes(x=s, color=as.factor(u), ymin = lower, ymax = upper), width = 0.01)+
   scale_color_manual("mutation rate (u)", values=Col)+
-  scale_x_log10()+
+  scale_x_continuous(trans=scales::pseudo_log_trans(base = 10)) +
+#  scale_x_log10()+
   ylab("Fraction of inversions fixed after 10,000 generations")+
   xlab("mean(s)")+
   ThemeSobr+
