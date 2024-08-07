@@ -58,6 +58,7 @@ The directories/files in this repository needed to reproduce the results for thi
 
 Plotting function files
 - `Recreate-and-Compare-Jay-etal-Figs.R`: Code to reproduce the figures from Jay et al. (2022), as well as modified versions of the same plots using the full datasets to calculate inversion fixation rates.  
+- `functions-figures.R`: Convenience functions for plotting and code to reproduce supplementary figure S1 from Charlesworth & Olito (2024) comparing analytic approximations with the simulation data from Jay et al. (2022).  
 
 Executables
 - `makeFigs.R`: executable functions to create .pdf figures using simulation output files.
