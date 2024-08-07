@@ -44,6 +44,7 @@ The directories/files in this repository needed to reproduce the results for thi
 
 - **`R`**   
 	- `Recreate-and-Compare-Jay-etal-Figs.R`  
+	- `functions-figures.R`  
 - **`figures`***  
 - **`ModelSexChrom`*** (Download from [Figshare](https://figshare.com/authors/Paul_Jay/12493000))
 - **`MutationShelteringTheory-main`**  
