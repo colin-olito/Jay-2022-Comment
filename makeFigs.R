@@ -26,3 +26,14 @@ if(!figuresDirectoriesExist) {
 }
 
 source('./R/Recreate-and-Compare-Jay-etal-Figs.R')
+
+
+
+######################################
+#' Approximation Figures
+source('./R/functions-figures.R')
+
+toPdf(upperBoundApproxFig(JayDat = JayDat), 
+			figPath(name='upperBoundApproxFig.pdf'), width=10, height=7)
+embed_fonts(figPath(name='upperBoundApproxFig.pdf'))
+
