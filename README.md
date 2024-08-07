@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a GitHub repository for R code accompanying a comment article addressing the presentation of simulation results from Jay et al. (2022) "*Sheltering of deleterious mutations explains the stepwise extension of recombination suppression on sex chromosomes and other supergenes*" (doi: [`10.1371/journal.pbio.3001698`](10.1371/journal.pbio.3001698)). In it you will find all the code necessary to reproduce key figures from the original article and also the same figures produced using the full datasets.
+This is a GitHub repository for R code accompanying a comment article addressing the presentation of simulation results from Jay et al. (2022) "*Sheltering of deleterious mutations explains the stepwise extension of recombination suppression on sex chromosomes and other supergenes*" (doi: [`10.1371/journal.pbio.3001698`](10.1371/journal.pbio.3001698)). In it you will find all the code necessary to reproduce key figures from the original article and also the same figures produced using the full datasets. All versions of record for this repository are available on Zenodo [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13254796.svg)](https://doi.org/10.5281/zenodo.13254796).
 
 
 ## Abstract
